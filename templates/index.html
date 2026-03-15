@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V5 Context Reinforcer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans antialiased h-screen flex flex-col items-center justify-center p-4">
+
+    <div id="generator-screen" class="w-full max-w-md flex flex-col space-y-6">
+        <h1 class="text-3xl font-bold text-center tracking-tight text-blue-400">Reinforce Active Session</h1>
+        
+        <p class="text-gray-400 text-center text-sm">Inject new goals into your "full" chat to maintain logic integrity.</p>
+        
+        <textarea id="seed-input" rows="4" 
+            class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all placeholder-gray-500" 
+            placeholder="What is the immediate priority for the current chat?"></textarea>
+        
+        <button id="generate-btn" onclick="generatePrompt()" 
+            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl py-4 rounded-xl transition-all flex items-center justify-center space-x-2">
+            <span id="btn-text">Compile Reinforcement</span>
+            <div id="spinner" class="loader hidden"></div>
+        </button>
+        
+        <p id="status-text" class="text-center text-gray-400 text-sm h-4"></p>
+    </div>
+
+    <div id="success-screen" class="w-full max-w-md flex flex-col space-y-6 hidden mt-8">
+        <div class="text-center space-y-2">
+            <div class="mx-auto w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-3xl font-bold">Package Compiled</h2>
+            <p class="text-gray-400">Ready to paste into your active chat.</p>
+        </div>
+
+        <div class="relative bg-gray-800 border border-gray-700 rounded-xl p-4 overflow-hidden h-32">
+            <p id="preview-text" class="text-gray-300 font-mono text-xs leading-relaxed opacity-70"></p>
+            <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-800 to-transparent"></div>
+        </div>
+
+        <button id="copy-btn" onclick="copyToClipboard()" 
+            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl py-4 rounded-xl transition-all shadow-lg shadow-blue-900/50">
+            📋 Copy & Reinforce
+        </button>
+    </div>
+
+    <script>
+        let finalPromptText = "";
+
+        async function generatePrompt() {
+            const seed = document.getElementById('seed-input').value;
+            if (!seed) return alert("Please enter a Priority.");
+
+            document.getElementById('btn-text').innerText = "Analyzing Context...";
+            document.getElementById('spinner').classList.remove('hidden');
+            document.getElementById('generate-btn').classList.add('opacity-80', 'cursor-not-allowed');
+            document.getElementById('status-text').innerText = "Syncing V5 Mod...";
+
+            setTimeout(() => { document.getElementById('status-text').innerText = "Injecting Active Priority..."; }, 800);
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seed: seed })
+                });
+                const data = await response.json();
+                finalPromptText = data.prompt;
+
+                document.getElementById('generator-screen').classList.add('hidden');
+                document.getElementById('success-screen').classList.remove('hidden');
+                document.getElementById('preview-text').innerText = finalPromptText.substring(0, 150) + "...";
+
+            } catch (error) {
+                alert("Error generating prompt.");
+            }
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(finalPromptText).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerText = "✅ Copied!";
+                btn.classList.replace('bg-blue-600', 'bg-gray-700');
+                setTimeout(() => {
+                    btn.innerText = "📋 Copy & Reinforce";
+                    btn.classList.replace('bg-gray-700', 'bg-blue-600');
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
