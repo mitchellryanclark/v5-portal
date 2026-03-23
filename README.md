@@ -56,10 +56,11 @@ It generates a highly structured "Project Handoff" prompt that acts as a state o
 ## Usage
 
 1. Open the application in your browser.
-2. In the text area, enter your immediate priority or the current goal for your AI session (e.g., "Implement the user authentication flow").
-3. Click **Compile Reinforcement**.
-4. Once compiled, click the **Copy & Reinforce** button to copy the generated project handoff packet to your clipboard.
-5. Paste this prompt as the first message into your new AI session to initialize its context state.
+2. Enter a "seed phrase" that captures your immediate priority or the current goal for the next stage of your project (e.g., "Implement the user authentication flow").
+3. Click **Compile Reinforcement** to generate the context extraction prompt.
+4. Click **Copy & Reinforce** to copy this massive extraction prompt to your clipboard.
+5. **Paste this prompt into your CURRENT, long-running AI chat** (the one containing all your existing project history and context). The AI will analyze its own conversation history, redact sensitive data, and generate a highly structured "Project Handoff" packet.
+6. Copy *that* resulting packet and paste it as the very first message into a **BRAND NEW AI session** to initialize it with all your preserved project context.
 
 ## Modifying the Prompt
 To change the output behavior of the reinforcer, simply edit the `prompt_template.txt` file. Make sure to retain the `{seed_phrase}` variable where you want the active priority to inject.
