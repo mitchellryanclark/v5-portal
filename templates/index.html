@@ -16,15 +16,15 @@
     <div id="generator-screen" class="w-full max-w-md flex flex-col space-y-6">
         <h1 class="text-3xl font-bold text-center tracking-tight text-blue-400">V5.5 Reinforcer</h1>
         
-        <p class="text-gray-400 text-center text-sm">Inject new goals into your "full" chat to maintain logic integrity.</p>
+        <p class="text-gray-400 text-center text-sm">Force your bloated chat to generate a clean "Project Handoff" packet.</p>
         
         <textarea id="seed-input" aria-label="Immediate Priority" rows="4" 
             class="w-full bg-gray-800 border border-gray-700 rounded-xl p-4 text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all placeholder-gray-500" 
-            placeholder="What is the immediate priority for the current chat?"></textarea>
+            placeholder="What is the main goal or priority for the NEXT phase of this project?"></textarea>
         
         <button id="generate-btn" aria-label="Compile Reinforcement Prompt" onclick="generatePrompt()" 
             class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl py-4 rounded-xl transition-all flex items-center justify-center space-x-2">
-            <span id="btn-text">Compile Reinforcement</span>
+            <span id="btn-text">Generate Extraction Script</span>
             <div id="spinner" aria-hidden="true" class="loader hidden"></div>
         </button>
         
@@ -36,8 +36,11 @@
             <div class="mx-auto w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
                 <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             </div>
-            <h2 class="text-3xl font-bold">Package Compiled</h2>
-            <p class="text-gray-400">Ready to paste into your active chat.</p>
+            <h2 class="text-3xl font-bold">Extraction Script Ready</h2>
+            <div class="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 text-left">
+                <p class="text-blue-300 text-sm mb-1"><strong>Step 1:</strong> Paste this script into your CURRENT, bloated AI chat.</p>
+                <p class="text-blue-300 text-sm"><strong>Step 2:</strong> Copy the resulting JSON packet into a BRAND NEW chat.</p>
+            </div>
         </div>
 
         <div class="relative bg-gray-800 border border-gray-700 rounded-xl p-4 overflow-hidden h-32">
@@ -47,12 +50,31 @@
 
         <button id="copy-btn" aria-label="Copy prompt to clipboard" onclick="copyToClipboard()" 
             class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl py-4 rounded-xl transition-all shadow-lg shadow-blue-900/50">
-            📋 Copy & Reinforce
+            📋 Copy Script
+        </button>
+        
+        <button onclick="resetApp()" class="text-gray-400 hover:text-white text-sm transition-colors text-center w-full mt-2">
+            ← Generate Another Script
         </button>
     </div>
 
     <script>
         let finalPromptText = "";
+
+        // Reset the application state
+        function resetApp() {
+            document.getElementById('seed-input').value = "";
+            document.getElementById('status-text').innerText = "";
+            document.getElementById('status-text').classList.replace('text-red-400', 'text-gray-400');
+            
+            document.getElementById('generator-screen').classList.remove('hidden');
+            document.getElementById('success-screen').classList.add('hidden');
+            
+            // Reset button
+            document.getElementById('btn-text').innerText = "Generate Extraction Script";
+            document.getElementById('spinner').classList.add('hidden');
+            document.getElementById('generate-btn').classList.remove('opacity-80', 'cursor-not-allowed');
+        }
 
         async function generatePrompt() {
             const seed = document.getElementById('seed-input').value;
@@ -63,7 +85,7 @@
             statusText.classList.add('text-gray-400');
             
             if (!seed.trim()) {
-                statusText.innerText = "Please enter a Priority.";
+                statusText.innerText = "Please enter a Phase Goal.";
                 statusText.classList.replace('text-gray-400', 'text-red-400');
                 return;
             }
@@ -71,9 +93,9 @@
             document.getElementById('btn-text').innerText = "Analyzing Context...";
             document.getElementById('spinner').classList.remove('hidden');
             document.getElementById('generate-btn').classList.add('opacity-80', 'cursor-not-allowed');
-            statusText.innerText = "Syncing V5.5 Mod...";
+            statusText.innerText = "Compiling Handoff Script...";
 
-            setTimeout(() => { if(statusText.innerText === "Syncing V5.5 Mod...") statusText.innerText = "Injecting Active Priority..."; }, 800);
+            setTimeout(() => { if(statusText.innerText === "Compiling Handoff Script...") statusText.innerText = "Injecting Priority Directives..."; }, 800);
 
             try {
                 const response = await fetch('/generate', {
